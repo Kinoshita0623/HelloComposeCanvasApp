@@ -3,6 +3,7 @@ package jp.panta.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -34,14 +38,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            PaintInputTest()
+            PaintInputTest {
+
+                Text("hogehoge")
+            }
         }
     }
 }
 
 
 @Composable
-fun PaintInputTest() {
+fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         var offsetX by remember {
             mutableStateOf(0f)
@@ -60,43 +67,50 @@ fun PaintInputTest() {
         }
 
 
+        Canvas(modifier = Modifier.matchParentSize()) {
+            drawRect(
+                color = Color.Blue,
+                topLeft = Offset(offsetX + 50, offsetY + 50),
+                size = Size(offsetX2 - offsetX + 50, offsetY3 - offsetY + 50)
+            )
+        }
 
-        Box(
+        CirclePoint(
             Modifier
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
                 }
-                .background(Color.Blue)
                 .size(50.dp)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
-                        if(offsetX + 100 + dragAmount.x < offsetX2) {
+                        if (offsetX + 100 + dragAmount.x < offsetX2) {
                             offsetX += dragAmount.x
                         }
-                        if(offsetY + dragAmount.y + 100 < offsetY3) {
+                        if (offsetY + dragAmount.y + 100 < offsetY3) {
                             offsetY += dragAmount.y
                         }
+
                     }
                 }
+
         )
 
-        Box(
+        CirclePoint(
             Modifier
                 .offset {
                     IntOffset(offsetX2.roundToInt(), offsetY.roundToInt())
                 }
-                .background(Color.Blue)
                 .size(50.dp)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
 
-                        if(offsetX2 + dragAmount.x > offsetX + 100) {
+                        if (offsetX2 + dragAmount.x > offsetX + 100) {
                             offsetX2 += dragAmount.x
 
                         }
-                        if(offsetY + dragAmount.y + 100 < offsetY3) {
+                        if (offsetY + dragAmount.y + 100 < offsetY3) {
                             offsetY += dragAmount.y
                         }
 
@@ -105,20 +119,19 @@ fun PaintInputTest() {
 
         )
 
-        Box(
+        CirclePoint(
             Modifier
                 .offset {
                     IntOffset(offsetX2.roundToInt(), offsetY3.roundToInt())
                 }
-                .background(Color.Blue)
                 .size(50.dp)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
-                        if(offsetX2 + dragAmount.x > offsetX + 100) {
+                        if (offsetX2 + dragAmount.x > offsetX + 100) {
                             offsetX2 += dragAmount.x
                         }
-                        if(offsetY3 + dragAmount.y > offsetY + 100 ) {
+                        if (offsetY3 + dragAmount.y > offsetY + 100) {
                             offsetY3 += dragAmount.y
                         }
                     }
@@ -126,28 +139,42 @@ fun PaintInputTest() {
 
         )
 
-        Box(
+        CirclePoint(
             Modifier
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY3.roundToInt())
                 }
-                .background(Color.Blue)
                 .size(50.dp)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
-                        if(offsetX + dragAmount.x + 100 < offsetX2) {
+                        if (offsetX + dragAmount.x + 100 < offsetX2) {
                             offsetX += dragAmount.x
                         }
-                        if(offsetY3 + dragAmount.y  > offsetY + 100) {
+                        if (offsetY3 + dragAmount.y > offsetY + 100) {
 
                             offsetY3 += dragAmount.y
                         }
                     }
                 }
         )
+        block.invoke(this)
+
 
     }
+}
+
+@Composable
+fun CirclePoint(modifier: Modifier) {
+    Box(modifier) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(CircleShape)
+                .background(Color.Red)
+        )
+    }
+
 }
 @Composable
 fun Greeting(name: String) {
