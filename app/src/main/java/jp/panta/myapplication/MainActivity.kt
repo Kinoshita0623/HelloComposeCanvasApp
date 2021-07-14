@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
@@ -43,7 +44,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PaintInputTest(pointSize: Dp, block: @Composable BoxScope.()->Unit) {
+
     Box(modifier = Modifier.fillMaxSize()) {
+
         var offsetX by remember {
             mutableStateOf(0f)
         }
@@ -59,7 +62,10 @@ fun PaintInputTest(pointSize: Dp, block: @Composable BoxScope.()->Unit) {
         var offsetY3 by remember {
             mutableStateOf(200f)
         }
+        TransformableSample()
 
+
+        block.invoke(this)
 
         Canvas(modifier = Modifier.matchParentSize()) {
 
@@ -175,7 +181,7 @@ fun PaintInputTest(pointSize: Dp, block: @Composable BoxScope.()->Unit) {
                     }
                 }
         )
-        block.invoke(this)
+
 
 
     }
@@ -193,15 +199,36 @@ fun CirclePoint(modifier: Modifier) {
     }
 
 }
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    HelloComposeCanvasAppTheme {
-        Greeting("Android")
+fun TransformableSample() {
+    // set up all transformation states
+    var zoom by remember { mutableStateOf(1f) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
+    Box(
+        Modifier.fillMaxSize()
+    ) {
+        Box(
+            Modifier
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .graphicsLayer(
+                    scaleX = zoom,
+                    scaleY = zoom,
+                )
+                .background(Color.Green)
+                .pointerInput(Unit) {
+                    detectTransformGestures(
+                        onGesture = { _, pan, gestureZoom, _ ->
+                            zoom *= gestureZoom
+                            offsetX += (pan.x * zoom)
+                            offsetY += (pan.y * zoom)
+                        }
+                    )
+                }
+                .size(100.dp)
+        )
     }
+
 }
