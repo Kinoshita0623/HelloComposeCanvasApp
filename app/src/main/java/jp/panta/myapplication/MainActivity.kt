@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -23,7 +24,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
@@ -236,11 +239,11 @@ fun TransformableSample() {
                     detectTransformGestures(
                         onGesture = { _, pan, gestureZoom, _ ->
                             Log.d("zoom size", "zoom:$zoom")
-                            if(zoom * gestureZoom in 0.5..4.0) {
+                            if (zoom * gestureZoom in 0.5..4.0) {
                                 zoom *= gestureZoom
                             }
-                            offsetX += (pan.x * zoom)
-                            offsetY += (pan.y * zoom)
+                            offsetX += pan.x
+                            offsetY += pan.y
                         }
                     )
                 }
@@ -253,11 +256,15 @@ fun TransformableSample() {
                         scaleX = zoom
                         scaleY = zoom
                     }
-                    .height(100.dp)
-                    .fillMaxWidth()
-                    .background(Color.Green)
 
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.background_img),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+
         }
     }
 
