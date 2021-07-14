@@ -7,12 +7,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,14 +19,11 @@ import androidx.compose.ui.unit.dp
 import jp.panta.myapplication.ui.theme.HelloComposeCanvasAppTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
 
@@ -38,7 +32,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            PaintInputTest {
+            PaintInputTest(25.dp) {
 
                 Text("hogehoge")
             }
@@ -48,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
+fun PaintInputTest(pointSize: Dp, block: @Composable BoxScope.()->Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         var offsetX by remember {
             mutableStateOf(0f)
@@ -68,10 +62,33 @@ fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
 
 
         Canvas(modifier = Modifier.matchParentSize()) {
-            drawRect(
+
+            drawLine(
                 color = Color.Blue,
-                topLeft = Offset(offsetX + 50, offsetY + 50),
-                size = Size(offsetX2 - offsetX + 50, offsetY3 - offsetY + 50)
+                start = Offset(offsetX + pointSize.value + 3, offsetY + pointSize.value + 3),
+                end = Offset(offsetX2 + pointSize.value + 3, offsetY + pointSize.value + 3),
+                strokeWidth = 6f
+            )
+
+            drawLine(
+                color = Color.Blue,
+                start = Offset(offsetX + pointSize.value + 3, offsetY + pointSize.value + 3),
+                end = Offset(offsetX + pointSize.value + 3, offsetY3 + pointSize.value + 3),
+                strokeWidth = 6f
+            )
+
+            drawLine(
+                color = Color.Blue,
+                start = Offset(offsetX2 + pointSize.value + 3, offsetY + pointSize.value + 3),
+                end = Offset(offsetX2 + pointSize.value + 3, offsetY3 + pointSize.value + 3),
+                strokeWidth = 6f
+            )
+
+            drawLine(
+                color = Color.Blue,
+                start = Offset(offsetX + pointSize.value + 3, offsetY3 + pointSize.value + 3),
+                end = Offset(offsetX2 + pointSize.value + 3, offsetY3 + pointSize.value + 3),
+                strokeWidth = 6f
             )
         }
 
@@ -80,7 +97,7 @@ fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
                 }
-                .size(50.dp)
+                .size(pointSize)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
@@ -101,7 +118,7 @@ fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
                 .offset {
                     IntOffset(offsetX2.roundToInt(), offsetY.roundToInt())
                 }
-                .size(50.dp)
+                .size(pointSize)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
@@ -124,7 +141,7 @@ fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
                 .offset {
                     IntOffset(offsetX2.roundToInt(), offsetY3.roundToInt())
                 }
-                .size(50.dp)
+                .size(pointSize)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
@@ -144,7 +161,7 @@ fun PaintInputTest(block: @Composable BoxScope.()->Unit) {
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY3.roundToInt())
                 }
-                .size(50.dp)
+                .size(pointSize)
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
